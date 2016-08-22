@@ -1,4 +1,4 @@
 # PyMines
 depends on
-Python3.5
-PyGame
+1. Python3.5
+2. PyGame
