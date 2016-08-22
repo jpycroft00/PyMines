@@ -7,34 +7,44 @@ class Tile:
 	isMine = False
 	adjacent = 0
 	flagged = False
-	opened = False
-	pos = (x,y) = (0,0)
-	width = 1
+	opened = True
+	x,y = 0,0
+	textGeometry = geometry = 0,0,0,0
+	textOffset = 3
+	w = 1
 	black = (0,0,0)
 	blue = (0,0,255)
 	red = (255,0,0)
-	font = pygame.font.SysFont('comicsans', 15, False, False)
+	font = pygame.font.SysFont('comicsans', 32, False, False)
+	label = font.render("", w, red)
 
 
-	def __init__(self, x, y, width, isMine):
+
+	def __init__(self, x, y, w, isMine):
 		if isMine:
 			self.arm
 		self.x = x
 		self.y = y
-		self.width = width
+		self.w = w
+		self.geometry = (self.x*self.w),(self.y*self.w),self.w,self.w
+		self.textGeometry = (self.x*self.w)+self.textOffset,(self.y*self.w),self.w,self.w
 
 	#Arm the bomb
 	def arm(self):
 		self.isMine = True
 		self.adjacent = 0
+
+	def update(self):
+		if self.isMine:
+			self.label = self.font.render("X", self.w, self.red)
+		elif self.adjacent != 0:
+			self.label = self.font.render(str(self.adjacent), self.w, self.black)
+
 		
 	def show(self, screen):
-		pygame.draw.rect(screen, self.blue, (((self.pos[self.x]+1) * self.width), (self.pos[self.y] * self.width), self.width, self.width), 0)
-		pygame.draw.rect(screen, self.black, (((self.pos[self.x]+1) * self.width), (self.pos[self.y] * self.width), self.width, self.width), 1)		
-		
-		if self.isMine:
-			if self.opened:
-				while False == pygame.font.get_init():
-					sleep(10)
-				label = font.render("X", self.width, red)
+		pygame.draw.rect(screen, self.blue, self.geometry, 0)
+		pygame.draw.rect(screen, self.black, self.geometry, 1)
+
+		if self.opened:
+			screen.blit(self.label, self.textGeometry)
 				
