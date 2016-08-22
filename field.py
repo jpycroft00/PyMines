@@ -30,61 +30,62 @@ class Field:
 			self.tiles[randX][randY].arm()													#Finally actually set the mine on the tile
 			i += 1
 
-		####Populate the adjacent numbers####
+		####Populate the adjacent numbers by checking surrounding tiles to see if they're mines####
 		x = 0
 		while x <len(self.tiles):
 			y=0
 			while y<len(self.tiles[0]):
+				#### algorithm for calculating numbers using exceptions
 				try:
 					if self.tiles[x-1][y-1].isMine and x > 0 and y > 0:
 						self.tiles[x][y].adjacent += 1
 				except LookupError:
 					print("LookupError at " +str(x) + "," +str(y))
-					# break
+
 				try:
 					if self.tiles[x][y-1].isMine and y > 0:
 						self.tiles[x][y].adjacent += 1
 				except LookupError:
 					print("LookupError at " +str(x) + "," +str(y))
-					# break
+
 				try:
 					if self.tiles[x+1][y-1].isMine and y > 0:
 						self.tiles[x][y].adjacent += 1
 				except LookupError:
 					print("LookupError at " +str(x) + "," +str(y))
-					# break
+
 				try:
 					if self.tiles[x-1][y].isMine and x > 0:
 						self.tiles[x][y].adjacent += 1
 				except LookupError:
 					print("LookupError at " +str(x) + "," +str(y))
-					# break
+
 				try:	
 					if self.tiles[x+1][y].isMine:
 						self.tiles[x][y].adjacent += 1
 				except LookupError:
 					print("LookupError at " +str(x) + "," +str(y))
-					# break
+
 				try:	
 					if self.tiles[x-1][y+1].isMine and x > 0:
 						self.tiles[x][y].adjacent += 1
 				except LookupError:
 					print("LookupError at " +str(x) + "," +str(y))
-					# break
+
 				try:	
 					if self.tiles[x][y+1].isMine:
 						self.tiles[x][y].adjacent += 1
 				except LookupError:
 					print("LookupError at " +str(x) + "," +str(y))
-					# break
+
 				try:	
 					if self.tiles[x+1][y+1].isMine:
 						self.tiles[x][y].adjacent += 1
 				except LookupError:
 					print("LookupError at " +str(x) + "," +str(y))
-					# break
-						
 
+						
+				### Algorithm for calculating numbers by detecting edge cases and avoiding them
 				# if (x < (len(self.tiles)-1) and (y < (len(self.tiles[0])-1))) and (x > 0 and y > 0):#Do this if all surrounding tiles are still within the field
 				# 	if self.tiles[x-1][y-1].isMine:
 				# 		self.tiles[x][y].adjacent += 1
