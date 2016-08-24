@@ -8,11 +8,12 @@ def checkInput():
 	for event in pygame.event.get():
 		if event.type == pygame.MOUSEBUTTONUP:
 			field.click(event)
+			draw()
 
 def draw():
-	while not field.gameOver:
+	# while not field.gameOver:
 		# print("drawing")
-		checkInput()
+		# checkInput()
 		screen.fill(black)
 		# print("drawing tiles (top level)")
 		field.show(screen)
@@ -26,8 +27,10 @@ screen = pygame.display.set_mode(size)
 field = field.Field(30, 16, width, height, 99)
 # field.generate()
 pygame.init()
-draw()
 # field.show(screen)
+draw()
+while not field.gameOver:
+	checkInput()
 
     
 

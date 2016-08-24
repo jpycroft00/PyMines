@@ -18,6 +18,8 @@ class Tile:
 	white = (255,255,255)
 	font = pygame.font.SysFont('comicsans', 32, False, False)
 	label = font.render("", w, red)
+	neighbours = list()
+	satisfied = False
 
 
 
@@ -37,22 +39,35 @@ class Tile:
 		self.update()
 
 	def open(self):
-		if self.opened or self.flagged:
+		print(self.adjacent)
+		if self.flagged:
 			print("Don't be silly")
 		elif not self.opened:
 			self.opened = True
 		self.update()
+		for element in self.neighbours:
+			if (self.satisfied and not element.opened):
+				element.open()
 
 	def flag(self):
 		if self.opened:
 			print("Don't be silly")
-		elif self.flagged:
-			self.flagged = False
-		elif not self.flagged:
-			self.flagged = True
+		else:
+			self.flagged = (not self.flagged)
 		self.update()
 
 	def update(self):
+		self.adjacent = 0
+		flagCount = 0
+		if self in self.neighbours:
+			print("WTF")
+		for element in self.neighbours:
+			if element.isMine and not self.isMine:
+				self.adjacent += 1
+		for element in self.neighbours:
+			if element.flagged:
+				flagCount += 1
+		self.satisfied = (flagCount == self.adjacent and not self.isMine)
 		if self.flagged:
 			self.label = self.font.render("P", self.w, self.red)			
 		elif self.isMine:
@@ -62,13 +77,13 @@ class Tile:
 
 		
 	def show(self, screen):
+		# print(len(self.neighbours))
 		pygame.draw.rect(screen, self.blue, self.geometry, 0)
 		pygame.draw.rect(screen, self.black, self.geometry, 1)
-
 		if self.opened:
 			pygame.draw.rect(screen, self.white, self.geometry, 0)
 			pygame.draw.rect(screen, self.black, self.geometry, 1)
 			screen.blit(self.label, self.textGeometry)
 		if self.flagged:
 			screen.blit(self.label, self.textGeometry)
-				
+		# screen.blit(self.label, self.textGeometry)

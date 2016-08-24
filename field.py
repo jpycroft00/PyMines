@@ -22,88 +22,114 @@ class Field:
 				self.tiles[x].append(tile.Tile(xpos,ypos,self.tileWidth,False))
 				y += 1
 			x += 1
-		print((self.tiles[0][0].x,self.tiles[0][0].y))
+		# print((self.tiles[0][0].x,self.tiles[0][0].y))
 
 	def generate(self, firstClick): 																#Populate the mine field with mines and count adjacent mines
 		####Populate the mine field with mines####
 		i = 0
-		rangeX = range(firstClick[0]-1,firstClick[0]+1)
-		print(rangeX)
-		rangeY = range(firstClick[1]-1,firstClick[1]+1)
-		print(rangeY)
 		while i < self.mineCount: 														#Set a random tile to be a mine, do this until all mines requested are generated
 			randX = random.randint(0,len(self.tiles)-1)
 			randY = random.randint(0,len(self.tiles[0])-1)
+			element = self.tiles[randX][randY]
+			rangeX = range(element.x-element.w,element.x+(element.w*2))
+			rangeY = range(element.y-element.w,element.y+(element.w*2))
 
-			while self.tiles[randX][randY].isMine or (randX in rangeX and randY in rangeY):											#Check if the randomly selected tile is already a mine, if so then find another random empty tile
+			while self.tiles[randX][randY].isMine or (firstClick[0] in rangeX and firstClick[1] in rangeY):											#Check if the randomly selected tile is already a mine, if so then find another random empty tile
 				randX = random.randint(0,len(self.tiles)-1)
 				randY = random.randint(0,len(self.tiles[0])-1)
-
+				element = self.tiles[randX][randY]
+				rangeX = range(element.x-element.w,element.x+(element.w*2))
+				rangeY = range(element.y-element.w,element.y+(element.w*2))
 			self.tiles[randX][randY].arm()													#Finally actually set the mine on the tile
 			# print((randX,randY))
 			i += 1
 
+		for row in self.tiles:
+			for element in row:
+				neighbours = list()
+				for x in range(-1,2):
+					for y in range(-1,2):
+						# print(x,y)
+						try:
+							if element is self.tiles[self.tiles.index(row)+x][row.index(element)+y]:
+								pass
+								# print("ignoring")
+							else:
+								leftI = self.tiles.index(row)+x
+								rightI = row.index(element)+y
+								if leftI >= 0 and rightI >= 0:
+									neighbours.append(self.tiles[self.tiles.index(row)+x][row.index(element)+y])
+									if self.tiles[self.tiles.index(row)+x][row.index(element)+y].isMine:
+										print("X")
+						except LookupError:
+							pass
+				element.neighbours = neighbours
+				print("========")		# print("derp")
+				print(id(element.neighbours))
+				print("== "+ str(len(element.neighbours)))
+				element.update()
+
 		####Populate the adjacent numbers by checking surrounding tiles to see if they're mines####
-		x = 0
-		while x <len(self.tiles):
-			y=0
-			while y<len(self.tiles[0]):
-				#### algorithm for calculating numbers using exceptions
-				try:
-					if self.tiles[x-1][y-1].isMine and x > 0 and y > 0:
-						self.tiles[x][y].adjacent += 1
-				except LookupError:
-					pass
-					# print("LookupError at " +str(x) + "," +str(y))
+		# x = 0
+		# while x <len(self.tiles):
+		# 	y=0
+		# 	while y<len(self.tiles[0]):
+		# 		#### algorithm for calculating numbers using exceptions
+		# 		try:
+		# 			if self.tiles[x-1][y-1].isMine and x > 0 and y > 0:
+		# 				self.tiles[x][y].adjacent += 1
+		# 		except LookupError:
+		# 			pass
+		# 			# print("LookupError at " +str(x) + "," +str(y))
 
-				try:
-					if self.tiles[x][y-1].isMine and y > 0:
-						self.tiles[x][y].adjacent += 1
-				except LookupError:
-					pass
-					# print("LookupError at " +str(x) + "," +str(y))
+		# 		try:
+		# 			if self.tiles[x][y-1].isMine and y > 0:
+		# 				self.tiles[x][y].adjacent += 1
+		# 		except LookupError:
+		# 			pass
+		# 			# print("LookupError at " +str(x) + "," +str(y))
 
-				try:
-					if self.tiles[x+1][y-1].isMine and y > 0:
-						self.tiles[x][y].adjacent += 1
-				except LookupError:
-					pass
-					# print("LookupError at " +str(x) + "," +str(y))
+		# 		try:
+		# 			if self.tiles[x+1][y-1].isMine and y > 0:
+		# 				self.tiles[x][y].adjacent += 1
+		# 		except LookupError:
+		# 			pass
+		# 			# print("LookupError at " +str(x) + "," +str(y))
 
-				try:
-					if self.tiles[x-1][y].isMine and x > 0:
-						self.tiles[x][y].adjacent += 1
-				except LookupError:
-					pass
-					# print("LookupError at " +str(x) + "," +str(y))
+		# 		try:
+		# 			if self.tiles[x-1][y].isMine and x > 0:
+		# 				self.tiles[x][y].adjacent += 1
+		# 		except LookupError:
+		# 			pass
+		# 			# print("LookupError at " +str(x) + "," +str(y))
 
-				try:	
-					if self.tiles[x+1][y].isMine:
-						self.tiles[x][y].adjacent += 1
-				except LookupError:
-					pass
-					# print("LookupError at " +str(x) + "," +str(y))
+		# 		try:	
+		# 			if self.tiles[x+1][y].isMine:
+		# 				self.tiles[x][y].adjacent += 1
+		# 		except LookupError:
+		# 			pass
+		# 			# print("LookupError at " +str(x) + "," +str(y))
 
-				try:	
-					if self.tiles[x-1][y+1].isMine and x > 0:
-						self.tiles[x][y].adjacent += 1
-				except LookupError:
-					pass
-					# print("LookupError at " +str(x) + "," +str(y))
+		# 		try:	
+		# 			if self.tiles[x-1][y+1].isMine and x > 0:
+		# 				self.tiles[x][y].adjacent += 1
+		# 		except LookupError:
+		# 			pass
+		# 			# print("LookupError at " +str(x) + "," +str(y))
 
-				try:	
-					if self.tiles[x][y+1].isMine:
-						self.tiles[x][y].adjacent += 1
-				except LookupError:
-					pass
-					# print("LookupError at " +str(x) + "," +str(y))
+		# 		try:	
+		# 			if self.tiles[x][y+1].isMine:
+		# 				self.tiles[x][y].adjacent += 1
+		# 		except LookupError:
+		# 			pass
+		# 			# print("LookupError at " +str(x) + "," +str(y))
 
-				try:	
-					if self.tiles[x+1][y+1].isMine:
-						self.tiles[x][y].adjacent += 1
-				except LookupError:
-					pass
-					# print("LookupError at " +str(x) + "," +str(y))
+		# 		try:	
+		# 			if self.tiles[x+1][y+1].isMine:
+		# 				self.tiles[x][y].adjacent += 1
+		# 		except LookupError:
+		# 			pass
+		# 			# print("LookupError at " +str(x) + "," +str(y))
 
 						
 				### Algorithm for calculating numbers by detecting edge cases and avoiding them
@@ -200,9 +226,9 @@ class Field:
 				# 		self.tiles[x][y].adjacent += 1
 				# 	if self.tiles[x+1][y].isMine:
 				# 		self.tiles[x][y].adjacent += 1
-				self.tiles[x][y].update()
-				y+=1
-			x+=1
+				# self.tiles[x][y].update()
+			# 	y+=1
+			# x+=1
 		print("jobs done")
 		self.generated = True
 
@@ -226,9 +252,7 @@ class Field:
 	def click(self, event):
 		if event.button == 1: #left click
 			if not self.generated:
-				indexX=int((event.pos[0]-self.xoff)/self.tileWidth)
-				indexY=int((event.pos[1]-self.yoff)/self.tileWidth)
-				self.generate((indexX,indexY))
+				self.generate(event.pos)
 			i=0
 			while i < len(self.tiles):
 				j=0
@@ -245,8 +269,16 @@ class Field:
 
 
 		elif event.button == 2: #middle click
-			print("Not yet implemented")
-			#placeholder for treelike opening of blank tiles
+			for row in self.tiles:
+				for element in row:
+					x = element.x
+					y = element.y
+					w = element.w
+					rangeX = range(x,x+w)
+					rangeY = range(y,y+w)
+					if event.pos[0] in rangeX and event.pos[1] in rangeY:
+						if element.opened:
+							element.open()
 
 		elif event.button == 3: #right click
 			# print("ye be a scurvy dawg")
@@ -263,3 +295,55 @@ class Field:
 						self.tiles[i][j].flag()
 					j+=1
 				i+=1
+
+	# def openSurrounding(self, x, y):
+		# try:	
+		# 	if 
+		# 		try:
+		# 			self.tiles[x-1][y-1].open()
+		# 			if not self.tiles[x-1][y-1].isMine and self.tiles[x-1][y-1].adjacent == 0:
+		# 				openSurrounding(x-1,y-1)
+		# 		except:
+		# 			pass
+		# 		try:
+		# 			self.tiles[x][y-1].open()
+		# 			if not self.tiles[x][y-1].isMine and self.tiles[x][y-1].adjacent == 0:
+		# 				openSurrounding(x,y-1)
+		# 		except:
+		# 			pass
+		# 		try:
+		# 			self.tiles[x+1][y-1].open()
+		# 			if not self.tiles[x+1][y-1].isMine and self.tiles[x+1][y-1].adjacent == 0:
+		# 				openSurrounding(x+1,y-1)
+		# 		except:
+		# 			pass
+		# 		try:
+		# 			self.tiles[x-1][y].open()
+		# 			if not self.tiles[x-1][y].isMine and self.tiles[x-1][y].adjacent == 0:
+		# 				openSurrounding(x-1,y)
+		# 		except:
+		# 			pass
+		# 		try:
+		# 			self.tiles[x+1][y].open()
+		# 			if not self.tiles[x+1][y].isMine and self.tiles[x+1][y].adjacent == 0:
+		# 				openSurrounding(x+1,y)
+		# 		except:
+		# 			pass
+		# 		try:
+		# 			self.tiles[x-1][y+1].open()
+		# 			if not self.tiles[x-1][y+1].isMine and self.tiles[x-1][y+1].adjacent == 0:
+		# 				openSurrounding(x-1,y+1)
+		# 		except:
+		# 			pass
+		# 		try:
+		# 			self.tiles[x][y+1].open()
+		# 			if not self.tiles[x][y+1].isMine and self.tiles[x][y+1].adjacent == 0:
+		# 				openSurrounding(x,y+1)
+		# 		except:
+		# 			pass
+		# 		try:
+		# 			self.tiles[x+1][y+1].open()
+		# 			if not self.tiles[x+1][y+1].isMine and self.tiles[x+1][y+1].adjacent == 0:
+		# 				openSurrounding(x+1,y+1)
+		# 		except:
+		# 			pass
