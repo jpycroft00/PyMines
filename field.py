@@ -3,13 +3,14 @@ import tile, pygame, random
 class Field:
 	tiles = list()
 	mineCount = 0
+	remainingMines = 0
 	tileWidth = 0
 	gameOver = False
 	generated = False
 	xoff = 0
 	yoff = 0
 	def __init__(self, collumns , rows, displayX, displayY, mineCount): 	#Create an empty mine field as a 2D array of tiles
-		self.mineCount = mineCount
+		self.remainingMines = self.mineCount = mineCount
 		x = 0
 		self.xoff = self.tileWidth = int(displayX / (2 + collumns)) 									#Calculate how wide each tile should be
 		self.yoff = int(displayY / 3)-self.xoff
@@ -236,6 +237,7 @@ class Field:
 		x=0
 		# print(len(self.tiles))
 		# print(len(self.tiles[x]))
+		self.remainingMines = self.mineCount
 		while x < len(self.tiles):
 			# print(x)
 			y=0
@@ -245,9 +247,13 @@ class Field:
 				self.tiles[x][y].show(screen)
 				if(self.tiles[x][y].isMine and self.tiles[x][y].opened):
 					self.gameOver = True
+				if self.tiles[x][y].flagged:
+					self.remainingMines -= 1
+					if self.remainingMines < 0:
+						self.remainingMines = 0
 				y+=1
 			x+=1
-		pygame.display.update()
+		# pygame.display.update()
 
 	def click(self, event):
 		if event.button == 1: #left click
